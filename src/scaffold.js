@@ -90,7 +90,7 @@ function generatePingCommand(dir) {
 
 class PingCommand extends BaseCommand {
   constructor() {
-    super('${name}', []);
+    super('ping', []);
   }
 
   async run(client, message, args) {
@@ -98,18 +98,18 @@ class PingCommand extends BaseCommand {
   }
 }
 
-module.exports = ${capitalize(name)}Command;
+module.exports = PingCommand;
 `
   fs.writeFileSync(path.join(dir, 'PingCommand.js'), str);
 }
 
 function generateReadyEvent(dir) {
-  const str = `// ${BASE_EVENT_URL}${name}
+  const str = `// ${BASE_EVENT_URL}ready
 const BaseEvent = require('../utils/structures/BaseEvent');
 
 class ReadyEvent extends BaseEvent {
   constructor() {
-    super('${name}');
+    super('ready');
   }
 
   async run(client) {
