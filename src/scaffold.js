@@ -85,6 +85,43 @@ function generatePackageJSON(dir, name) {
   fs.writeFileSync(path.join(dir, 'package.json'), str);
 }
 
+function generatePingCommand(dir) {
+  const str = `const BaseCommand = require('../utils/structures/BaseCommand');
+
+class PingCommand extends BaseCommand {
+  constructor() {
+    super('${name}', []);
+  }
+
+  async run(client, message, args) {
+    message.channel.send('Pong!');
+  }
+}
+
+module.exports = ${capitalize(name)}Command;
+`
+  fs.writeFileSync(path.join(dir, 'PingCommand.js'), str);
+}
+
+function generateReadyEvent(dir) {
+  const str = `// ${BASE_EVENT_URL}${name}
+const BaseEvent = require('../utils/structures/BaseEvent');
+
+class ReadyEvent extends BaseEvent {
+  constructor() {
+    super('${name}');
+  }
+
+  async run(client) {
+    console.log(\`\${client.user.tag} has logged in\`);
+  }
+}
+
+module.exports = ReadyEvent;
+`
+  fs.writeFileSync(path.join(dir, 'ReadyEvent.js'), str);
+}
+
 function generateUtilFiles(dir) {
   const registry = `
 const path = require('path');
@@ -139,9 +176,9 @@ module.exports = {
     this.name = name;
     this.aliases = aliases;
   }
+}
 
-  module.exports = BaseCommand;
-} 
+module.exports = BaseCommand;
 `
 
   const baseEvent = `module.exports = class BaseEvent {
@@ -169,7 +206,8 @@ class ${capitalize(name)}Command extends BaseCommand {
     super('${name}', []);
   }
 
-  run(client, message, args) {
+  async run(client, message, args) {
+
   }
 }
 
@@ -229,8 +267,8 @@ function generateProject(name) {
   generateEnvFile(projectPath);
   generateMainFile(srcPath);
   generatePackageJSON(projectPath, name);
-  generateCommand('ping', name);
-  generateEvent({ name: 'ready' }, name);
+  generatePingCommand(commandsPath);
+  generateReadyEvent(eventsPath);
   generateUtilFiles(utilsPath);
 
   console.log(symbols.info + chalk.cyan(' Installing dependencies ...'));
