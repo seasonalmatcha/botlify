@@ -122,6 +122,34 @@ module.exports = ReadyEvent;
   fs.writeFileSync(path.join(dir, 'ReadyEvent.js'), str);
 }
 
+function generateMessageEvent(dir) {
+  const str = `// ${BASE_EVENT_URL}message
+const BaseEvent = require('../utils/structures/BaseEvent');
+
+module.exports = class MessageEvent extends BaseEvent {
+  constructor() {
+    super('message');
+  }
+
+  async run(client, message) {
+    if (message.author.bot) return;
+
+    if (message.content.startsWith(client.config.PREFIX)) {
+      const [cmdName, ...cmdArgs] = message.content
+        .slice(client.config.PREFIX.length)
+        .trim()
+        .split(/\s+/);
+      const command = client.commands.get(cmdName) || client.commands.get(client.aliases.get(cmdName));
+      if (command) {
+        command.run(client, message, cmdArgs);
+      }
+    }
+  }
+}
+`
+  fs.writeFileSync(path.join(dir, 'MessageEvent.js'), str);
+}
+
 function generateUtilFiles(dir) {
   const registry = `
 const path = require('path');
@@ -266,6 +294,7 @@ function generateProject(name) {
   generateConfigFile(srcPath);
   generateEnvFile(projectPath);
   generateMainFile(srcPath);
+  generateMessageEvent(eventsPath);
   generatePackageJSON(projectPath, name);
   generatePingCommand(commandsPath);
   generateReadyEvent(eventsPath);
