@@ -156,8 +156,8 @@ module.exports = {
   fs.writeFileSync(path.join(dir, 'structures', 'BaseEvent.js'), baseEvent);
 }
 
-function generateCommand(name) {
-  const dir = path.join(process.cwd(), 'src', 'commands');
+function generateCommand(name, cwd = process.cwd()) {
+  const dir = path.join(cwd, 'src', 'commands');
 
   if (fs.existsSync(path.join(dir, `${capitalize(name)}Command.js`)))
     return console.log(symbols.error + chalk.red(` Command ${chalk.black.bgRed(name)} already exist`));
@@ -179,8 +179,8 @@ module.exports = ${capitalize(name)}Command;
   console.log(symbols.success + chalk.green(` Created command ${name}`));
 }
 
-function generateEvent({ name, params }) {
-  const dir = path.join(process.cwd(), 'src', 'events');
+function generateEvent({ name, params }, cwd = process.cwd()) {
+  const dir = path.join(cwd, 'src', 'events');
   if (fs.existsSync(path.join(dir, `${capitalize(name)}Event.js`)))
     return console.log(symbols.error + chalk.red(` Command ${chalk.black.bgRed(name)} already exist`));
 
@@ -229,8 +229,8 @@ function generateProject(name) {
   generateEnvFile(projectPath);
   generateMainFile(srcPath);
   generatePackageJSON(projectPath, name);
-  generateCommand('ping');
-  generateEvent({ name: 'ready' });
+  generateCommand('ping', name);
+  generateEvent({ name: 'ready' }, name);
   generateUtilFiles(utilsPath);
 
   console.log(symbols.info + chalk.cyan(' Installing dependencies ...'));
